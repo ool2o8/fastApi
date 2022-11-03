@@ -1,5 +1,10 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordRequestForm
+
+
+from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi_login import LoginManager
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -8,6 +13,9 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+SECRET = "super-secret-key"
+ALGORITHM = "HS256"
+manager = LoginManager(SECRET, '/login')
 
 # Dependency
 def get_db():
@@ -17,6 +25,24 @@ def get_db():
     finally:
         db.close()
 
+
+@app.post('/login')
+def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    email = data.username
+    password = crud.get_password_hash(data.password)
+
+    user = crud.get_login_data(db, email=email)
+
+    # if not user:
+    #     # you can return any response or error of your choice
+    #     raise InvalidCredentialsException
+    # elif password != user.hashed_password:
+    #     raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data={'sub': email}
+    )
+    return {'access_token': access_token, 'user_password' : user.hashed_password, 'hash' : password, 'data':crud.get_password_hash(data.password)}
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
