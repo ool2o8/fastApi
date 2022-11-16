@@ -9,10 +9,9 @@ from ..crud import auth_crud
 
 from ..schemas import auth_schemas
 from ..utils.auth_utils import signJWT,get_current_user,AuthProvider, get_user_by_username, get_users, get_user_by_email, get_db
-from .. import models
+
 
 from fastapi import APIRouter
-from ..db.database import SessionLocal, engine
 
 router = APIRouter()
 
@@ -48,7 +47,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     return token
 
 
-@router.post("/users/", response_model=auth_schemas.User)
+@router.post("/users/")
 def create_user(user: auth_schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:

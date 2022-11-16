@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
+import datetime
 from .db.database import Base
 
 
@@ -14,7 +14,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     items = relationship("Item", back_populates="owner")
-
+    posts =relationship("Post", back_populates="owner")
 
 class Item(Base):
     __tablename__ = "items"
@@ -25,3 +25,13 @@ class Item(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="items")
+
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    description = Column(String, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    owner = relationship("User", back_populates="posts")

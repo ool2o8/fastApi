@@ -13,16 +13,16 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-async def get_password_hash(password):
+def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def get_verify_password(plain_password, hashed_password):
+def get_verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
 
-async def create_user(db: Session, user: auth_schemas.UserCreate):
+def create_user(db: Session, user: auth_schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
     db_user = models.User(email=user.email, username=user.username, hashed_password=hashed_password)
     db.add(db_user)
