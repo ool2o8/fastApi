@@ -12,3 +12,11 @@ def create_post(request: Request, db: Session, post: blog_schemas.PostBase):
     db.commit()
     db.refresh(db_post)
     return db_post
+
+def list_post(request: Request, db:Session):
+    db_post=db.query(models.Post).all()
+    return db_post
+
+def retrieve_post(request: Request, db:Session, post_id: int):
+    db_post=db.query(models.Post).filter(models.Post.id==post_id).first()
+    return db_post
