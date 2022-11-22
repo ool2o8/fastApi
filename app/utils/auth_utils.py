@@ -1,26 +1,23 @@
 from typing import Union
 import jwt, datetime,time
 from sqlalchemy.orm import Session
-from fastapi import Request, Depends, HTTPException, status
+from fastapi import Request, Depends, HTTPException
 from .. import models
-from jose import JWTError, jwt
+from jose import jwt
 from app.db.database import SessionLocal
 from .. import models
+import os
+import json
+from pathlib import Path
+from ..db.database import get_db
 
-from ..db.database import SessionLocal, engine
+BASE_DIR=Path(__file__).resolve().parent.parent
+secret_file = os.path.join(BASE_DIR, 'secret.json')
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
 
 
-models.Base.metadata.create_all(bind=engine)
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY =secrets["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -97,5 +94,7 @@ def create_access_token(data: dict, expires_delta: Union[datetime.timedelta, Non
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
 
 

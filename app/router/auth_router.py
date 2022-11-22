@@ -1,14 +1,15 @@
 
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi import Depends, HTTPException, Response
 from fastapi.responses import RedirectResponse
 from fastapi_login.exceptions import InvalidCredentialsException
-from fastapi import Cookie, Request
+from fastapi import Request
 from ..crud import auth_crud
 
 from ..schemas import auth_schemas
-from ..utils.auth_utils import signJWT,get_current_user,AuthProvider, get_user_by_username, get_users, get_user_by_email, get_db
+from ..utils.auth_utils import signJWT,get_current_user,AuthProvider, get_user_by_username, get_users, get_user_by_email
+from ..db.database import get_db
 
 
 from fastapi import APIRouter
@@ -17,7 +18,7 @@ router = APIRouter()
 
 
 @router.post("/token")
-async def create_token(response:Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def set_token(response:Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user_dict = get_user_by_username(db,form_data.username)
     if not user_dict:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
@@ -47,9 +48,18 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     return token
 
 
+@router.get('/logout')
+async def logout(request: Request, response: Response, db: Session = Depends(get_db), dependencies=Depends(AuthProvider())):
+    if request.cookies["access_token"]:
+        response.delete_cookie(key="access_token")
+    else:
+        raise InvalidCredentialsException
+    return {"message": "logout"}
+
+
 @router.post("/users/")
 def create_user(user: auth_schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = get_user_by_email(db, email=user.email)
+    db_user = get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return auth_crud.create_user(db=db, user=user)

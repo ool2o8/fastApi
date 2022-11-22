@@ -5,3 +5,4 @@
 - 2022-11-05 쿠키에 담고, 로그인 유지가 dependency 추가, refactoring
 - 2022-11-16 post 모델, 스키마 추가
 - 2022-11-17 post list, retrieve 추가
+- 2022-11-22 food 이미지 업로드 기능 추가 + cors issue
