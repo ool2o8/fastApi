@@ -65,7 +65,7 @@ def create_user(user: auth_schemas.UserCreate, db: Session = Depends(get_db)):
     return auth_crud.create_user(db=db, user=user)
 
 
-@router.get("/users/", response_model=list[auth_schemas.User])
+@router.get("/users/")
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = get_users(db, skip=skip, limit=limit)
     return users
