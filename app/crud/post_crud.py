@@ -20,3 +20,12 @@ def list_post(request: Request, db:Session):
 def retrieve_post(request: Request, db:Session, post_id: int):
     db_post=db.query(models.Post).filter(models.Post.id==post_id).first()
     return db_post
+
+def update_img(request: Request, db: Session,post_id: int, img_url: str):
+    auth= get_current_user(db=db, request=request)
+    
+    db_food = db.query(models.Post).filter(models.Post.id==post_id)
+    db_food.update({models.Post.img_url:img_url})
+    db.commit()
+    
+    return {'response': "upload complete."}

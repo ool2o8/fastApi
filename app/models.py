@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, VARCHAR, Text
 from sqlalchemy.orm import relationship
 import datetime
 from .db.database import Base
@@ -21,7 +21,8 @@ class Food(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    img_url=Column(String, index=True)
+    description = Column(String, index=True)
+    img_url=Column(String, index=True, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
     created_dt=Column(DateTime, default=datetime.datetime.now())
 
@@ -32,7 +33,9 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
+    img_url=Column(String, index=True, nullable=True)
     description = Column(String, index=True)
+    created_dt=Column(DateTime, default=datetime.datetime.now())
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="posts")

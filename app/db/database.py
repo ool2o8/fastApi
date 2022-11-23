@@ -17,12 +17,13 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-
 # Dependency
 def get_db():
-    models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+def get_metadata():
+    return models.Base.metadata

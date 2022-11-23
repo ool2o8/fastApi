@@ -29,10 +29,3 @@ async def root():
     return {"message": "Hello Bigger Applications!"}
 
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
