@@ -11,6 +11,27 @@
 - 2022-11-17 post list, retrieve 추가
 - 2022-11-22 food 이미지 업로드 기능 추가 + cors issue
 - 2022-11-23 food 이미지 기능 post로 이동, 이미지 업로드, 이미지 response 추가
+- 
+#auth_router URL
+|CRUD|HTTP|URL|
+|---|---|---|
+|토큰 발행|POST|/auth/token|
+|로그인|POST|/auth/login|
+|로그아웃|GET|/auth/logout|
+|유저 조회|GET|/auth/users|
+|유저 생성|POST|/auth/users|
+|내 정보 조회|GET|/auth/me|
+
+#blog_router URL
+|CRUD|HTTP|URL|
+|---|---|---|
+|게시글 전체 조회|GET|/post/post|
+|게시글 생성|POST|/post/post|
+|특정 게시글 조회|GET|/post/post/{post_id: int}|
+|이미지 등록|POST|/img|
+|게시글 이미지 조회|GET|/post/post/img/{post_id: int}|
+
+
 
 
 ## 게시글 등록 시퀀스 다이어그램
