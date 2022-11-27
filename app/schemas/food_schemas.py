@@ -1,16 +1,11 @@
-from fastapi import UploadFile
-
 from pydantic import BaseModel
-from fastapi import File
-class FoodBase(BaseModel):
+class foodBase(BaseModel):
     title: str
+    description: str
 
-class FoodImgBase(FoodBase):
-    img: UploadFile
 
-class Food(FoodBase):
+class food(foodBase):
     id: int
-    title: str
-    img: str
-    class Config:
-        orm_mode = True
+    class config:
+        orm_mode=True
+

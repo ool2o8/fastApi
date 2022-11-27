@@ -137,4 +137,5 @@ migrations
 alembic.ini
 app.db
 static
-secret.json
+secrets.json
+.secrets.json

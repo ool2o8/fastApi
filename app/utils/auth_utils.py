@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from fastapi import Request, Depends, HTTPException
 from .. import models
 from jose import jwt
-from app.db.database import SessionLocal
 from .. import models
 import os
 import json
@@ -12,7 +11,7 @@ from pathlib import Path
 from ..db.database import get_db
 
 BASE_DIR=Path(__file__).resolve().parent.parent
-secret_file = os.path.join(BASE_DIR, 'secret.json')
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
 with open(secret_file) as f:
     secrets = json.loads(f.read())
 
@@ -59,11 +58,13 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 class AuthProvider:
     async def __call__(self, request: Request, db: Session = Depends(get_db)):
         authorization: str=request.cookies
+        if not "access_token" in authorization:
+            raise HTTPException(status_code=403, detail="No authorization")
         token=decodeJWT(authorization["access_token"])
         if not token:
             raise HTTPException(status_code=403, detail="Invalid authorization code.")
         if not get_user(token["user_id"], db):
-            raise HTTPException(status_code=403, detail="Not auth")
+            raise HTTPException(status_code=403, detail="No authorization")
         return True
 
 

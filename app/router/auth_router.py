@@ -16,6 +16,10 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+@router.get("", response_model=list[auth_schemas.User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = get_users(db, skip=skip, limit=limit)
+    return users
 
 @router.post("/token")
 async def set_token(response:Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -30,14 +34,11 @@ async def set_token(response:Response, form_data: OAuth2PasswordRequestForm = De
     response.set_cookie(key="access_token", value=token)
     return (token, {"token_type": "bearer"})
 
-
 @router.post('/login')
 def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     username = data.username
     password = data.password
-
     user = get_user_by_username(db, username=username)
-
     if not user:
         # you can return any response or error of your choice
         raise InvalidCredentialsException
@@ -47,7 +48,6 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     
     return token
 
-
 @router.get('/logout')
 async def logout(request: Request, response: Response, db: Session = Depends(get_db), dependencies=Depends(AuthProvider())):
     if request.cookies["access_token"]:
@@ -56,20 +56,12 @@ async def logout(request: Request, response: Response, db: Session = Depends(get
         raise InvalidCredentialsException
     return {"message": "logout"}
 
-
 @router.post("/users/")
 def create_user(user: auth_schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_username(db, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return auth_crud.create_user(db=db, user=user)
-
-
-@router.get("/users/")
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = get_users(db, skip=skip, limit=limit)
-    return users
-
 
 @router.post("/me/", response_model=auth_schemas.User)
 def read_users(request: Request, db: Session = Depends(get_db), dependencies=Depends(AuthProvider())):
